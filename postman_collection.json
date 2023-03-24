@@ -1,0 +1,152 @@
+{
+  "info": {
+    "_postman_id": "5911ce7f-2659-41b7-9456-6b38f036b116",
+    "name": "Side Take Home",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "377885"
+  },
+  "item": [
+    {
+      "name": "Get Properties",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/properties?page=2&size=5",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["properties"],
+          "query": [
+            {
+              "key": "page",
+              "value": "2"
+            },
+            {
+              "key": "size",
+              "value": "5"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Property By Id",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [""],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/properties/{{propertyId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["properties", "{{propertyId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Property",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [""],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/properties/{{propertyId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["properties", "{{propertyId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add Property",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var resp = JSON.parse(responseBody);",
+              "postman.setEnvironmentVariable(\"propertyId\", resp.raw);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"address\": \"459 Burrilla Street\",\n  \"price\": 20714261,\n  \"bedrooms\": 5,\n  \"bathrooms\": 3,\n  \"type\": \"Condominum\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/properties",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["properties"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Property",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [""],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"address\": \"459 Burrilla Street #1\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/properties/{{propertyId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["properties", "{{propertyId}}"]
+        }
+      },
+      "response": []
+    }
+  ]
+}
