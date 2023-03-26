@@ -1,5 +1,5 @@
 import express from 'express';
-// import bodyParser from 'body-parser'; // Deprecated as of Express 4.0
+// import bodyParser from 'body-parser'; // Not needed as of Express 4.0
 import { PropertyService } from '../services';
 const { validator, notFound } = require('../middlewares');
 
@@ -11,6 +11,7 @@ propertyRoutes.use(express.json()); // Built into Express as of 4.0
 // By nature of this endpoint - no need to validate via Joi
 propertyRoutes.get('/', async (req, res, next) => {
   let result;
+
   const page = req.query.page ? parseInt(req.query.page as string) : 1;
   const size = req.query.size ? parseInt(req.query.size as string) : 10; // maybe default this to null so they truly can get 'all'
   // maybe enforce max size - so cannot overloaded
@@ -37,6 +38,23 @@ propertyRoutes.get('/:id', async (req, res, next) => {
 
   try {
     result = await PropertyService.getById(propertyId);
+
+    // not found: return 404
+    if (!result) {
+      return notFound(req, res, next);
+    }
+
+    res.send(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
+propertyRoutes.post('/search', validator('search'), async (req, res, next) => {
+  let result;
+
+  try {
+    result = await PropertyService.search(req.body);
 
     // not found: return 404
     if (!result) {

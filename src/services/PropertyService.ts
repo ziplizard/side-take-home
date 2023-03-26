@@ -1,5 +1,7 @@
 import AppDataSource from '../dataSource';
 import { Property } from '../entities';
+import { Search, Pagination } from '../helpers';
+import { PropertySearch } from '../interfaces';
 
 // Todo: add TS response types
 
@@ -12,27 +14,56 @@ export const PropertyService = {
     const result = await AppDataSource.manager.update(Property, id, put);
     return result;
   },
-  async getAll(page: number, size: number) {
-    // possibly toggle: if (!size) find() // all
-    const [list, count] = await AppDataSource.manager.findAndCount(Property, {
+  async search(body: PropertySearch) {
+    const { page, size } = body;
+    const where = Search.condition(body);
+    const [data, count] = await AppDataSource.manager.findAndCount(Property, {
+      where,
       order: { id: 'ASC' },
       skip: (page - 1) * size,
       take: size,
     });
 
-    const numOfPages = Math.ceil(count / size);
-    const hasPreviousPage = page > 1;
-    const hasNextPage = page < count;
+    const { numOfPages, hasPrevPage, hasNextPage } = Pagination.paginate(
+      page,
+      size,
+      count,
+    );
 
     return {
-      data: list,
+      data,
       meta: {
         page,
         size,
         total: count,
         numOfPages,
         hasNextPage,
-        hasPreviousPage,
+        hasPrevPage,
+      },
+    };
+  },
+  async getAll(page: number, size: number) {
+    const [data, count] = await AppDataSource.manager.findAndCount(Property, {
+      order: { id: 'ASC' },
+      skip: (page - 1) * size,
+      take: size,
+    });
+
+    const { numOfPages, hasPrevPage, hasNextPage } = Pagination.paginate(
+      page,
+      size,
+      count,
+    );
+
+    return {
+      data,
+      meta: {
+        page,
+        size,
+        total: count,
+        numOfPages,
+        hasNextPage,
+        hasPrevPage,
       },
     };
   },

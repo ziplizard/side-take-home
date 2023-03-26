@@ -40,8 +40,8 @@ describe('propertyRoutes', () => {
       expect(body.meta.numOfPages).toEqual(13);
       expect(body.meta).toHaveProperty('hasNextPage');
       expect(body.meta.hasNextPage).toEqual(true);
-      expect(body.meta).toHaveProperty('hasPreviousPage');
-      expect(body.meta.hasPreviousPage).toEqual(false);
+      expect(body.meta).toHaveProperty('hasPrevPage');
+      expect(body.meta.hasPrevPage).toEqual(false);
     });
   });
 
@@ -155,6 +155,40 @@ describe('propertyRoutes', () => {
       expect(statusCode).toEqual(500);
       expect(body).toHaveProperty('message');
       expect(body).toHaveProperty('stack');
+    });
+  });
+
+  describe('SEARCH /properties/search', () => {
+    it('should return array of properties', async () => {
+      const sample = {
+        field: 'bedrooms',
+        operator: 'eq',
+        value: '5',
+        page: 1,
+        size: 99,
+      };
+
+      const { body } = await request(app)
+        .post('/properties/search')
+        .send(sample);
+
+      expect(body).toHaveProperty('data');
+      expect(body.data).toBeInstanceOf(Array);
+      expect(body.data.length).toEqual(24);
+
+      expect(body).toHaveProperty('meta');
+      expect(body.meta).toHaveProperty('page');
+      expect(body.meta.page).toEqual(1);
+      expect(body.meta).toHaveProperty('size');
+      expect(body.meta.size).toEqual(99);
+      expect(body.meta).toHaveProperty('total');
+      expect(body.meta.total).toEqual(24);
+      expect(body.meta).toHaveProperty('numOfPages');
+      expect(body.meta.numOfPages).toEqual(1);
+      expect(body.meta).toHaveProperty('hasNextPage');
+      expect(body.meta.hasNextPage).toEqual(false);
+      expect(body.meta).toHaveProperty('hasPrevPage');
+      expect(body.meta.hasPrevPage).toEqual(false);
     });
   });
 });
