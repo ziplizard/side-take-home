@@ -79,8 +79,18 @@ describe('propertyRoutes', () => {
         .put('/properties/1')
         .send({ address: '459 Burilla' });
 
-      expect(body).toHaveProperty('affected');
-      expect(body.affected).toEqual(1);
+      expect(body).toHaveProperty('address');
+      expect(body.address).toEqual('459 Burilla');
+
+      // no other properties were affected
+      // expect(body).toHaveProperty('price');
+      // expect(body.price).toEqual(20714261);
+      // expect(body).toHaveProperty('bedrooms');
+      // expect(body.bedrooms).toEqual(2);
+      // expect(body).toHaveProperty('bathrooms');
+      // expect(body.bathrooms).toEqual(5);
+      expect(body).toHaveProperty('type');
+      expect(body.type).toEqual(null);
     });
   });
 
@@ -107,10 +117,22 @@ describe('propertyRoutes', () => {
         bathrooms: 3,
       };
 
-      const { body } = await request(app).post('/properties').send(sample);
+      const { body, statusCode } = await request(app)
+        .post('/properties')
+        .send(sample);
 
-      expect(body).toHaveProperty('raw');
-      expect(body.raw).toEqual(expect.any(Number));
+      expect(body).toHaveProperty('address');
+      expect(body.address).toEqual('84431 East Sweet Bottom Br');
+      expect(body).toHaveProperty('price');
+      expect(body.price).toEqual(20714261);
+      expect(body).toHaveProperty('bedrooms');
+      expect(body.bedrooms).toEqual(5);
+      expect(body).toHaveProperty('bathrooms');
+      expect(body.bathrooms).toEqual(3);
+      expect(body).toHaveProperty('type');
+      expect(body.type).toEqual(null);
+
+      expect(statusCode).toEqual(201);
 
       propertyId = body.raw;
     });

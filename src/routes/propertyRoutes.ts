@@ -73,7 +73,9 @@ propertyRoutes.post('/', validator('create'), async (req, res, next) => {
   try {
     result = await PropertyService.create(req.body);
 
-    res.send(result); // todo: more elegant standardized response
+    // const record = await PropertyService.getById(result.raw);
+
+    res.status(201).send(result); // todo: more elegant standardized response
   } catch (error) {
     next(error);
   }
@@ -85,6 +87,8 @@ propertyRoutes.put('/:id', validator('update'), async (req, res, next) => {
 
   try {
     result = await PropertyService.update(propertyId, req.body);
+
+    // const record = await PropertyService.getById(propertyId);
 
     res.send(result); // todo: more elegant standardized response
   } catch (error) {

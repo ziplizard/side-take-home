@@ -7,11 +7,13 @@ import { PropertySearch } from '../interfaces';
 
 export const PropertyService = {
   async create(add: Property) {
-    const result = await AppDataSource.manager.insert(Property, add);
+    // const result = await AppDataSource.manager.insert(Property, add);
+    const result = await AppDataSource.manager.save(Property, add);
     return result;
   },
   async update(id: number, put: Property) {
-    const result = await AppDataSource.manager.update(Property, id, put);
+    const result = await AppDataSource.manager.save(Property, { ...put, id });
+    // may be better to update() then get() here!
     return result;
   },
   async search(body: PropertySearch) {
