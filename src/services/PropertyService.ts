@@ -1,14 +1,12 @@
-// import AppDataSource from '../dataSource';
-import { Prisma } from '@prisma/client';
+import { Property } from '@prisma/client';
 import prisma from '../prisma';
-import { Property } from '../entities';
 import { Search, Pagination } from '../helpers';
 import { PropertySearch } from '../interfaces';
 
 // Todo: add TS response types
 
 export const PropertyService = {
-  async create(add: object) {
+  async create(add: Property) {
     const result = await prisma.property.create({ data: add });
     return result;
   },
@@ -22,17 +20,20 @@ export const PropertyService = {
   async search(body: PropertySearch) {
     const { page, size } = body;
     const where = Search.condition(body);
-    const [data, count] = await prisma.property.findMany({
+    console.log('where:', where);
+    const find = {
       where,
-      order: { id: 'ASC' },
+      orderBy: { id: 'asc' },
       skip: (page - 1) * size,
       take: size,
-    });
+    };
+    console.log('find:', find);
+    const data = await prisma.property.findMany(find);
 
     const { numOfPages, hasPrevPage, hasNextPage } = Pagination.paginate(
       page,
       size,
-      count,
+      data.length,
     );
 
     return {
@@ -40,7 +41,7 @@ export const PropertyService = {
       meta: {
         page,
         size,
-        total: count,
+        total: data.length,
         numOfPages,
         hasNextPage,
         hasPrevPage,
@@ -48,8 +49,8 @@ export const PropertyService = {
     };
   },
   async getAll(page: number, size: number) {
-    const [data, count] = await prisma.property.findMany(Property, {
-      order: { id: 'ASC' },
+    const data = await prisma.property.findMany({
+      orderBy: { id: 'asc' },
       skip: (page - 1) * size,
       take: size,
     });
@@ -57,7 +58,7 @@ export const PropertyService = {
     const { numOfPages, hasPrevPage, hasNextPage } = Pagination.paginate(
       page,
       size,
-      count,
+      data.length,
     );
 
     return {
@@ -65,7 +66,7 @@ export const PropertyService = {
       meta: {
         page,
         size,
-        total: count,
+        total: data.length,
         numOfPages,
         hasNextPage,
         hasPrevPage,
@@ -73,13 +74,11 @@ export const PropertyService = {
     };
   },
   async getById(id: number) {
-    const result = await prisma.property.findFirst({ id });
+    const result = await prisma.property.findFirst({ where: { id } });
     return result;
   },
   async delete(id: number) {
-    const result = await prisma.property.delete({
-      where: { id },
-    });
+    const result = await prisma.property.delete({ where: { id } });
     return result;
   },
 };

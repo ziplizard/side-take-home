@@ -1,26 +1,25 @@
-import {
-  FindOptionsWhere,
-  Equal,
-  LessThan, // OrEqual ?
-  MoreThan, // OrEqual ?
-  Not,
-} from 'typeorm';
-import { Property } from '../entities';
 import { PropertySearch, OperatorMap, WhereType } from '../interfaces';
 
 export const Search = {
   operators(str: string): Function {
     const searchMap: OperatorMap = {
-      eq: Equal,
-      gt: MoreThan,
-      lt: LessThan,
-      ne: Not,
+      eq: (f: string, v: string) => {
+        return { [f]: v };
+      },
+      gt: (f: string, v: string) => {
+        return { [f]: { gt: v } };
+      },
+      lt: (f: string, v: string) => {
+        return { [f]: { lt: v } };
+      },
+      ne: (f: string, v: string) => {
+        return { NOT: { [f]: v } };
+      },
     };
     return searchMap[str];
   },
-  condition(body: PropertySearch): FindOptionsWhere<Property> {
-    const where = {} as WhereType;
-    where[body.field] = this.operators(body.operator)(body.value);
+  condition(body: PropertySearch): WhereType {
+    const where = this.operators(body.operator)(body.field, body.value);
     return where;
   },
 };
