@@ -73,7 +73,7 @@ describe('propertyRoutes', () => {
     });
   });
 
-  describe('UPDATE /properties/1', () => {
+  describe.only('UPDATE /properties/1', () => {
     it('should return single property by id', async () => {
       const { body } = await request(app)
         .put('/properties/1')
@@ -81,14 +81,12 @@ describe('propertyRoutes', () => {
 
       expect(body).toHaveProperty('address');
       expect(body.address).toEqual('459 Burilla');
-
-      // no other properties were affected
-      // expect(body).toHaveProperty('price');
-      // expect(body.price).toEqual(20714261);
-      // expect(body).toHaveProperty('bedrooms');
-      // expect(body.bedrooms).toEqual(2);
-      // expect(body).toHaveProperty('bathrooms');
-      // expect(body.bathrooms).toEqual(5);
+      expect(body).toHaveProperty('price');
+      expect(body.price).toEqual(20714261);
+      expect(body).toHaveProperty('bedrooms');
+      expect(body.bedrooms).toEqual(2);
+      expect(body).toHaveProperty('bathrooms');
+      expect(body.bathrooms).toEqual(5);
       expect(body).toHaveProperty('type');
       expect(body.type).toEqual(null);
     });
