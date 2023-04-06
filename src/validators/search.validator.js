@@ -2,7 +2,7 @@ const Joi = require('joi');
 
 module.exports = Joi.object({
   field: Joi.string().valid('address', 'price', 'bedrooms', 'bathrooms', 'type').required(),
-  value: Joi.string().required(),
+  value: Joi.alternatives().try(Joi.string(), Joi.number()).required(),
   operator: Joi.string()
     .valid('eq', 'gt', 'lt', 'ne')
     .required(),

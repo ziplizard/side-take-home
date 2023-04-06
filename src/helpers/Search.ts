@@ -4,16 +4,16 @@ export const Search = {
   operators(str: string): Function {
     const searchMap: OperatorMap = {
       eq: (f: string, v: string) => {
-        return { [f]: v };
+        return { [f]: v }; // can be string or number
       },
       gt: (f: string, v: string) => {
-        return { [f]: { gt: v } };
+        return { [f]: { gt: parseInt(v) } };
       },
       lt: (f: string, v: string) => {
-        return { [f]: { lt: v } };
+        return { [f]: { lt: parseInt(v) } };
       },
       ne: (f: string, v: string) => {
-        return { NOT: { [f]: v } };
+        return { NOT: { [f]: v } }; // can be string or number
       },
     };
     return searchMap[str];

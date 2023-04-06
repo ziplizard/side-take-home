@@ -1,12 +1,11 @@
 import request from 'supertest';
 import app from '../../app';
-import AppDataSource, { seedDb } from '../../dataSource';
+import { seedDb } from '../../prisma';
 
 let propertyId = 1;
 
 describe('propertyRoutes', () => {
   beforeAll(async () => {
-    await AppDataSource.initialize();
     await seedDb();
   });
 
@@ -21,7 +20,7 @@ describe('propertyRoutes', () => {
       expect(body.data[0]).toHaveProperty('address');
       expect(body.data[0].address).toEqual('74434 East Sweet Bottom Br #18393');
       expect(body.data[0]).toHaveProperty('price');
-      expect(body.data[0].price).toEqual(20714261);
+      expect(body.data[0].price).toEqual('20714261');
       expect(body.data[0]).toHaveProperty('bedrooms');
       expect(body.data[0].bedrooms).toEqual(2);
       expect(body.data[0]).toHaveProperty('bathrooms');
@@ -35,9 +34,9 @@ describe('propertyRoutes', () => {
       expect(body.meta).toHaveProperty('size');
       expect(body.meta.size).toEqual(10);
       expect(body.meta).toHaveProperty('total');
-      expect(body.meta.total).toEqual(126);
+      expect(body.meta.total).toEqual(119);
       expect(body.meta).toHaveProperty('numOfPages');
-      expect(body.meta.numOfPages).toEqual(13);
+      expect(body.meta.numOfPages).toEqual(12);
       expect(body.meta).toHaveProperty('hasNextPage');
       expect(body.meta.hasNextPage).toEqual(true);
       expect(body.meta).toHaveProperty('hasPrevPage');
@@ -52,7 +51,7 @@ describe('propertyRoutes', () => {
       expect(body).toHaveProperty('address');
       expect(body.address).toEqual('74434 East Sweet Bottom Br #18393');
       expect(body).toHaveProperty('price');
-      expect(body.price).toEqual(20714261);
+      expect(body.price).toEqual('20714261');
       expect(body).toHaveProperty('bedrooms');
       expect(body.bedrooms).toEqual(2);
       expect(body).toHaveProperty('bathrooms');
@@ -79,8 +78,16 @@ describe('propertyRoutes', () => {
         .put('/properties/1')
         .send({ address: '459 Burilla' });
 
-      expect(body).toHaveProperty('affected');
-      expect(body.affected).toEqual(1);
+      expect(body).toHaveProperty('address');
+      expect(body.address).toEqual('459 Burilla');
+      expect(body).toHaveProperty('price');
+      expect(body.price).toEqual('20714261');
+      expect(body).toHaveProperty('bedrooms');
+      expect(body.bedrooms).toEqual(2);
+      expect(body).toHaveProperty('bathrooms');
+      expect(body.bathrooms).toEqual(5);
+      expect(body).toHaveProperty('type');
+      expect(body.type).toEqual(null);
     });
   });
 
@@ -109,10 +116,19 @@ describe('propertyRoutes', () => {
 
       const { body } = await request(app).post('/properties').send(sample);
 
-      expect(body).toHaveProperty('raw');
-      expect(body.raw).toEqual(expect.any(Number));
+      expect(body).toHaveProperty('id');
+      expect(body).toHaveProperty('address');
+      expect(body.address).toEqual('84431 East Sweet Bottom Br');
+      expect(body).toHaveProperty('price');
+      expect(body.price).toEqual('20714261');
+      expect(body).toHaveProperty('bedrooms');
+      expect(body.bedrooms).toEqual(5);
+      expect(body).toHaveProperty('bathrooms');
+      expect(body.bathrooms).toEqual(3);
+      expect(body).toHaveProperty('type');
+      expect(body.type).toEqual(null);
 
-      propertyId = body.raw;
+      propertyId = body.id;
     });
   });
 
@@ -120,8 +136,16 @@ describe('propertyRoutes', () => {
     it('should delete a property by id', async () => {
       const { body } = await request(app).delete(`/properties/${propertyId}`);
 
-      expect(body).toHaveProperty('affected');
-      expect(body.affected).toEqual(1);
+      expect(body).toHaveProperty('address');
+      expect(body.address).toEqual('84431 East Sweet Bottom Br'); // the record that was just inserted
+      expect(body).toHaveProperty('price');
+      expect(body.price).toEqual('20714261');
+      expect(body).toHaveProperty('bedrooms');
+      expect(body.bedrooms).toEqual(5);
+      expect(body).toHaveProperty('bathrooms');
+      expect(body.bathrooms).toEqual(3);
+      expect(body).toHaveProperty('type');
+      expect(body.type).toEqual(null);
     });
   });
 
@@ -161,9 +185,9 @@ describe('propertyRoutes', () => {
   describe('SEARCH /properties/search', () => {
     it('should return array of properties', async () => {
       const sample = {
-        field: 'bedrooms',
+        field: 'price',
         operator: 'eq',
-        value: '5',
+        value: '12104869',
         page: 1,
         size: 99,
       };
@@ -174,7 +198,7 @@ describe('propertyRoutes', () => {
 
       expect(body).toHaveProperty('data');
       expect(body.data).toBeInstanceOf(Array);
-      expect(body.data.length).toEqual(24);
+      expect(body.data.length).toEqual(3);
 
       expect(body).toHaveProperty('meta');
       expect(body.meta).toHaveProperty('page');
@@ -182,7 +206,7 @@ describe('propertyRoutes', () => {
       expect(body.meta).toHaveProperty('size');
       expect(body.meta.size).toEqual(99);
       expect(body.meta).toHaveProperty('total');
-      expect(body.meta.total).toEqual(24);
+      expect(body.meta.total).toEqual(3);
       expect(body.meta).toHaveProperty('numOfPages');
       expect(body.meta.numOfPages).toEqual(1);
       expect(body.meta).toHaveProperty('hasNextPage');

@@ -1,4 +1,4 @@
-import { Property } from '@prisma/client';
+import { Prisma, Property } from '@prisma/client';
 import prisma from '../prisma';
 import { Search, Pagination } from '../helpers';
 import { PropertySearch } from '../interfaces';
@@ -19,15 +19,13 @@ export const PropertyService = {
   },
   async search(body: PropertySearch) {
     const { page, size } = body;
-    const where = Search.condition(body);
-    console.log('where:', where);
+    const where = Search.condition(body) as Prisma.PropertyWhereInput;
     const find = {
       where,
-      orderBy: { id: 'asc' },
-      skip: (page - 1) * size,
-      take: size,
+      orderBy: { id: 'asc' } as Prisma.PropertyOrderByWithRelationInput,
+      skip: ((page - 1) * size) as number,
+      take: size as number,
     };
-    console.log('find:', find);
     const data = await prisma.property.findMany(find);
 
     const { numOfPages, hasPrevPage, hasNextPage } = Pagination.paginate(
@@ -49,16 +47,18 @@ export const PropertyService = {
     };
   },
   async getAll(page: number, size: number) {
+    const resp = await prisma.property.findMany({});
+    const total = resp.length;
     const data = await prisma.property.findMany({
-      orderBy: { id: 'asc' },
-      skip: (page - 1) * size,
-      take: size,
+      orderBy: { id: 'asc' } as Prisma.PropertyOrderByWithRelationInput,
+      skip: ((page - 1) * size) as number,
+      take: size as number,
     });
 
     const { numOfPages, hasPrevPage, hasNextPage } = Pagination.paginate(
       page,
       size,
-      data.length,
+      total,
     );
 
     return {
@@ -66,7 +66,7 @@ export const PropertyService = {
       meta: {
         page,
         size,
-        total: data.length,
+        total,
         numOfPages,
         hasNextPage,
         hasPrevPage,
